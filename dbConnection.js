@@ -1,9 +1,14 @@
 const {Sequelize} = require('sequelize')
 
-const sequelize = new Sequelize('conduit','conduit','conduit',{
+/* const sequelize = new Sequelize('conduit','conduit','conduit',{
     dialect: 'postgres',
     host: 'localhost'
-})
+}) */
+
+const sequelize = new Sequelize('conduit','root','password',{
+    dialect: 'mysql',
+    host:'localhost'
+});
 
 const checkConnection =async () => {
     try {

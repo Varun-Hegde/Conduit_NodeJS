@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/Varun-Hegde/Conduit_NodeJS#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.2.5",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.5.0"
