@@ -55,11 +55,27 @@ module.exports.loginUser = async (req,res) => {
         }
             
         delete user.dataValues.password
-        user.dataValues.token = await sign({email: user.dataValues.email,username:user.dataValues.password})
+        user.dataValues.token = await sign({email: user.dataValues.email,username:user.dataValues.username})
 
         res.status(200).json({user})
     }catch(e){
         const status = res.statusCode ? res.statusCode : 500
         res.status(status).json({errors: { body: [ 'Could not create user ', e.message ] }})
+    }
+}
+
+module.exports.getUserByEmail = async (req,res) => {
+    try{
+        const user = await User.findByPk(req.user.email)
+        if(!user){
+            throw new Error('No such user found')
+        }
+        delete user.dataValues.password
+        user.dataValues.token = req.header('Authorization').split(' ')[1]
+        return res.status(200).json({user})
+    }catch(e){
+        return res.status(404).json({
+            errors: { body: [ e.message ] }
+        })
     }
 }

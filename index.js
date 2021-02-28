@@ -16,7 +16,7 @@ User.hasMany(Article,{
 })
 Article.belongsTo(User)
 
-const sync = async () => await sequelize.sync({force:true})
+const sync = async () => await sequelize.sync({alter:true})
 sync()
 
 app.use(express.json())
