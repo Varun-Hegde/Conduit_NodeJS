@@ -79,3 +79,40 @@ module.exports.getUserByEmail = async (req,res) => {
         })
     }
 }
+
+module.exports.updateUserDetails = async (req,res) => {
+    try{
+        const user = await User.findByPk(req.user.email)
+
+        if(!user){
+            res.status(401)
+            throw new Error('No user with this email id')
+        }
+            
+        
+        if(req.body.user){
+            const username = req.body.user.username ? req.body.user.username : user.username
+            const bio = req.body.user.bio ? req.body.user.bio : user.bio
+            const image = req.body.user.image ? req.body.user.image : user.image
+            let password = user.password
+            if(req.body.user.password)
+                password = await hashPassword(req.body.user.password)
+
+            const updatedUser = await user.update({username,bio,image,password})
+            delete updatedUser.dataValues.password
+            updatedUser.dataValues.token = req.header('Authorization').split(' ')[1]
+            res.json(updatedUser)
+        }else{
+            delete user.dataValues.password
+            user.dataValues.token = req.header('Authorization').split(' ')[1]
+            res.json(user)
+        }
+        
+    }catch(e){
+        const status = res.statusCode ? res.statusCode : 500
+        return res.status(status).json({
+            errors: { body: [ e.message ] }
+        })
+    }
+    
+}
