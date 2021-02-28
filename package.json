@@ -21,6 +21,7 @@
     "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "pg": "^8.5.1",
