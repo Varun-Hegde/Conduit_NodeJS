@@ -7,6 +7,7 @@ const User = require('./models/User')
 const Article = require('./models/Article')
 
 const userRoute = require('./routes/users')
+const articleRoute = require('./routes/articles')
 
 const app = express()
 
@@ -25,11 +26,9 @@ app.use(morgan('tiny'))
 app.get('/',(req,res) => {
     res.json({status:"API is running"});
 })
-
 app.use('/api',userRoute)
-
+app.use('/api/articles',articleRoute)
 app.use(notFound)
-
 app.use(errorHandler)
 
 const PORT = 8080
