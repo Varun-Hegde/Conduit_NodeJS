@@ -20,8 +20,6 @@ const Article = sequelize.define('Article',{
     }
 })
 
-
-
 module.exports = Article
 
 /* {

@@ -3,6 +3,7 @@ const morgan = require('morgan')
 
 const {notFound,errorHandler} = require('./middleware/errorHandler')
 const sequelize = require('./dbConnection')
+
 const User = require('./models/User')
 const Article = require('./models/Article')
 
@@ -12,12 +13,16 @@ const articleRoute = require('./routes/articles')
 const app = express()
 
 //RELATIONS:
+//1 to many relation between user and article
 User.hasMany(Article,{
     onDelete: 'CASCADE'
 })
 Article.belongsTo(User)
 
-const sync = async () => await sequelize.sync({alter:true})
+//many to many relation between article and taglist
+
+
+const sync = async () => await sequelize.sync({force:true})
 sync()
 
 app.use(express.json())

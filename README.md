@@ -1,11 +1,12 @@
-# Conduit (Medium Clone based on realworld.io)
+# Conduit (Medium Clone based on [realworld.io](https://github.com/gothinkster/realworld))
 
 ## Technologies Used
 
 1. NodeJS - Platform
 2. Express - Framework
-3. PostgreSQL - Database
-4. Sequelize - ORM
+3. JavaScript - Programming Language
+4. PostgreSQL - Database
+5. Sequelize - ORM
 
 ## Database Setup
 

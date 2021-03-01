@@ -7,7 +7,8 @@ const {Sequelize} = require('sequelize')
 
 const sequelize = new Sequelize('conduit','root','password',{
     dialect: 'mysql',
-    host:'localhost'
+    host:'localhost',
+    logging: false
 });
 
 const checkConnection =async () => {
