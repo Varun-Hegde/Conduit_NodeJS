@@ -6,6 +6,8 @@ const sequelize = require('./dbConnection')
 
 const User = require('./models/User')
 const Article = require('./models/Article')
+const Tag = require('./models/Tag')
+//const TagList = require('./models/TagList')
 
 const userRoute = require('./routes/users')
 const articleRoute = require('./routes/articles')
@@ -20,9 +22,11 @@ User.hasMany(Article,{
 Article.belongsTo(User)
 
 //many to many relation between article and taglist
+Article.belongsToMany(Tag,{through: 'TagList',uniqueKey:false,timestamps:false})
+Tag.belongsToMany(Article,{through: 'TagList',uniqueKey:false,timestamps:false})
 
 
-const sync = async () => await sequelize.sync({force:true})
+const sync = async () => await sequelize.sync({alter:true})
 sync()
 
 app.use(express.json())
