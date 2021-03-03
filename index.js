@@ -7,10 +7,11 @@ const sequelize = require('./dbConnection')
 const User = require('./models/User')
 const Article = require('./models/Article')
 const Tag = require('./models/Tag')
-//const TagList = require('./models/TagList')
+const Comment = require('./models/Comments')
 
 const userRoute = require('./routes/users')
 const articleRoute = require('./routes/articles')
+const commentRoute = require('./routes/comments')
 
 const app = express()
 
@@ -25,6 +26,14 @@ Article.belongsTo(User)
 Article.belongsToMany(Tag,{through: 'TagList',uniqueKey:false,timestamps:false})
 Tag.belongsToMany(Article,{through: 'TagList',uniqueKey:false,timestamps:false})
 
+//One to many relation between Article and Comments
+Article.hasMany(Comment,{onDelete: 'CASCADE'})
+Comment.belongsTo(Article)
+
+//One to many relation between User and Comments
+User.hasMany(Comment,{onDelete: 'CASCADE'})
+Comment.belongsTo(User)
+
 
 const sync = async () => await sequelize.sync({alter:true})
 sync()
@@ -37,6 +46,7 @@ app.get('/',(req,res) => {
 })
 app.use('/api',userRoute)
 app.use('/api/articles',articleRoute)
+app.use('/api/articles',commentRoute)
 app.use(notFound)
 app.use(errorHandler)
 

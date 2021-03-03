@@ -55,22 +55,13 @@ module.exports.getSingleArticleBySlug = async(req,res) => {
     try{
         const {slug} = req.params 
         article = await Article.findByPk(slug,{include:Tag})
-        const newTagList = []
-        
-        for(let t of article.dataValues.Tags){
-            newTagList.push(t.name)
-        }
-        delete article.dataValues.Tags
-        article.dataValues.tagList = newTagList
+
         const user = await article.getUser()
         
-        if(article){
-            delete user.dataValues.password
-            delete user.dataValues.email
-            article.dataValues.author = user
-            res.status(201).json({article})
-        }
-        res.status(201).json({article})
+        article = sanitizeOutput(article,user)
+
+        res.status(200).json({article})
+        
         
     }catch(e){
         return res.status(422).json({
@@ -111,7 +102,7 @@ module.exports.updateArticle = async(req,res) => {
         
 
     }catch(e){
-        const code = req.statusCode ? req.statusCode : 422
+        const code = res.statusCode ? res.statusCode : 422
         return res.status(code).json({
             errors: { body: [ 'Could not create article', e.message ] }
         })
@@ -132,4 +123,58 @@ function sanitizeOutput(article,user){
         article.dataValues.author = user
         return article
     }
+}
+
+module.exports.deleteArticle = async (req,res) => {
+    try{
+        const slugInfo = req.params.slug
+        let article = await Article.findByPk(slugInfo,{include:Tag})
+        
+        if(!article){
+            res.status(404)
+            throw new Error("Article not found")
+        }
+
+        const user = await User.findByPk(req.user.email)
+
+        if(user.email != article.UserEmail){
+            res.status(403)
+            throw new Error("You must be the author to modify this article")
+        }
+
+        await Article.destroy({where:{slug:slugInfo}})
+        res.status(200).json({"message":"Article deleted successfully"})
+        
+
+    }catch(e){
+        const code = res.statusCode ? res.statusCode : 422
+        return res.status(code).json({
+            errors: { body: [ 'Could not create article', e.message ] }
+        })
+    }
+}
+
+module.exports.getAllArticles = async (req,res) => {
+    try{
+        //Get all articles:
+
+        const {tag,author='Varun',limit=20,offset=0} = req.query
+        const articles = await Article.findAll({include:[
+            {
+                model: Tag,
+                attributes: ['name']
+            },
+            {
+                model:User,
+                attributes: ['email','username','bio','image']
+            }
+        ],limit:parseInt(limit),offset:parseInt(offset)})
+        res.json(articles)
+    }catch(e){
+        const code = res.statusCode ? res.statusCode : 422
+        return res.status(code).json({
+            errors: { body: [ 'Could not create article', e.message ] }
+        })
+    }
+    
 }
