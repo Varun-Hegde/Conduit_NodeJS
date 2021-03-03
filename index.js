@@ -13,6 +13,7 @@ const userRoute = require('./routes/users')
 const articleRoute = require('./routes/articles')
 const commentRoute = require('./routes/comments')
 const tagRoute = require('./routes/tags')
+const profileRoute = require('./routes/profile')
 
 const app = express()
 
@@ -36,6 +37,16 @@ User.hasMany(Comment,{onDelete: 'CASCADE'})
 Comment.belongsTo(User)
 
 
+//Many to many relation between User and User
+User.belongsToMany(User,{
+    through:'Followers',
+    as:'followers',
+    timestamps:false,
+})
+
+
+
+
 const sync = async () => await sequelize.sync({alter:true})
 sync()
 
@@ -49,6 +60,7 @@ app.use('/api',userRoute)
 app.use('/api/articles',articleRoute)
 app.use('/api/articles',commentRoute)
 app.use('/api/tags',tagRoute)
+app.use('/api/profiles',profileRoute)
 app.use(notFound)
 app.use(errorHandler)
 

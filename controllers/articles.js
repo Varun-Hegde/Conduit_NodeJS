@@ -2,6 +2,46 @@ const Article = require('../models/Article')
 const User = require('../models/User')
 const Tag = require('../models/Tag')
 const {slugify} = require('../utils/stringUtil')
+const sequelize = require('../dbConnection')
+
+function sanitizeOutput(article,user){
+    const newTagList = []
+    for(let t of article.dataValues.Tags){
+        newTagList.push(t.name)
+    }
+    delete article.dataValues.Tags
+    article.dataValues.tagList = newTagList
+        
+    if(article){
+        delete user.dataValues.password
+        delete user.dataValues.email
+        article.dataValues.author = user
+        return article
+    }
+}
+
+function sanitizeOutputMultiple(article){
+    const newTagList = []
+    for(let t of article.dataValues.Tags){
+        newTagList.push(t.name)
+    }
+    delete article.dataValues.Tags
+    article.dataValues.tagList = newTagList
+        
+    let user = {
+        username:article.dataValues.User.username,
+        email:article.dataValues.User.email, 
+        bio:article.dataValues.User.bio,
+        image: article.dataValues.User.image,
+        following: true
+    }
+
+    delete article.dataValues.User
+    article.dataValues.author = user
+
+    return article
+    
+}
 
 module.exports.createArticle =  async (req,res) => {
     try{
@@ -109,22 +149,6 @@ module.exports.updateArticle = async(req,res) => {
     }
 }
 
-function sanitizeOutput(article,user){
-    const newTagList = []
-    for(let t of article.dataValues.Tags){
-        newTagList.push(t.name)
-    }
-    delete article.dataValues.Tags
-    article.dataValues.tagList = newTagList
-        
-    if(article){
-        delete user.dataValues.password
-        delete user.dataValues.email
-        article.dataValues.author = user
-        return article
-    }
-}
-
 module.exports.deleteArticle = async (req,res) => {
     try{
         const slugInfo = req.params.slug
@@ -158,18 +182,78 @@ module.exports.getAllArticles = async (req,res) => {
     try{
         //Get all articles:
 
-        const {tag,author='Varun',limit=20,offset=0} = req.query
-        const articles = await Article.findAll({include:[
+        const {tag,author,limit=20,offset=0} = req.query
+        let article 
+        if(!author && tag){
+            article = await Article.findAll({include:[
             {
                 model: Tag,
-                attributes: ['name']
+                attributes: ['name'],
+                where:{name:tag}
             },
             {
                 model:User,
-                attributes: ['email','username','bio','image']
+                attributes: ['email','username','bio','image'],
             }
-        ],limit:parseInt(limit),offset:parseInt(offset)})
-        res.json(articles)
+            ],
+            limit:parseInt(limit),
+            offset:parseInt(offset)
+            })
+        }
+        else if(author && !tag){
+            article = await Article.findAll({include:[
+            {
+                model: Tag,
+                attributes: ['name'],
+                
+            },
+            {
+                model:User,
+                attributes: ['email','username','bio','image'],
+                where:{username:author}
+            }
+            ],
+            limit:parseInt(limit),
+            offset:parseInt(offset)
+            })
+        }else if(author && tag){
+            article = await Article.findAll({include:[
+            {
+                model: Tag,
+                attributes: ['name'],
+                where:{name:tag}
+            },
+            {
+                model:User,
+                attributes: ['email','username','bio','image'],
+                where:{username:author}
+            }
+            ],
+            limit:parseInt(limit),
+            offset:parseInt(offset)
+            })
+        }else{
+            article = await Article.findAll({include:[
+            {
+                model: Tag,
+                attributes: ['name'],
+            },
+            {
+                model:User,
+                attributes: ['email','username','bio','image'],
+            }
+            ],
+            limit:parseInt(limit),
+            offset:parseInt(offset)
+            })
+        }
+        let articles = []
+        for(let t of article){
+            let addArt = sanitizeOutputMultiple(t)
+            articles.push(addArt)
+        }
+
+        res.json({articles})
     }catch(e){
         const code = res.statusCode ? res.statusCode : 422
         return res.status(code).json({
@@ -178,3 +262,45 @@ module.exports.getAllArticles = async (req,res) => {
     }
     
 }
+
+module.exports.getFeed = async (req,res) => {
+    try{
+        const query =  `
+            SELECT UserEmail 
+            FROM followers
+            WHERE followerEmail = "${req.user.email}"`
+        const followingUsers = await sequelize.query(query)
+        if(followingUsers[0].length == 0){
+            res.json({articles:[]})
+        }
+        let followingUserEmail = []
+        for(let t of followingUsers[0]){
+            followingUserEmail.push(t.UserEmail)
+        }
+        
+        let article = await Article.findAll({
+                where: {
+                    UserEmail: followingUserEmail
+                },include: [Tag,User]
+            })
+
+        let articles = []
+        for(let t of article){
+            let addArt = sanitizeOutputMultiple(t)
+            articles.push(addArt)
+        }
+
+        res.json({articles})
+    }catch(e){
+        const code = res.statusCode ? res.statusCode : 422
+        return res.status(code).json({
+            errors: { body: [ 'Could not create article', e.message ] }
+        })
+    }
+}
+
+
+
+
+
+        
