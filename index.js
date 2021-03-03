@@ -12,6 +12,7 @@ const Comment = require('./models/Comments')
 const userRoute = require('./routes/users')
 const articleRoute = require('./routes/articles')
 const commentRoute = require('./routes/comments')
+const tagRoute = require('./routes/tags')
 
 const app = express()
 
@@ -47,6 +48,7 @@ app.get('/',(req,res) => {
 app.use('/api',userRoute)
 app.use('/api/articles',articleRoute)
 app.use('/api/articles',commentRoute)
+app.use('/api/tags',tagRoute)
 app.use(notFound)
 app.use(errorHandler)
 
