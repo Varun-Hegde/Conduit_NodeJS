@@ -14,6 +14,7 @@ const articleRoute = require('./routes/articles')
 const commentRoute = require('./routes/comments')
 const tagRoute = require('./routes/tags')
 const profileRoute = require('./routes/profile')
+const favouriteRoute = require('./routes/favourites')
 
 const app = express()
 
@@ -36,7 +37,6 @@ Comment.belongsTo(Article)
 User.hasMany(Comment,{onDelete: 'CASCADE'})
 Comment.belongsTo(User)
 
-
 //Many to many relation between User and User
 User.belongsToMany(User,{
     through:'Followers',
@@ -44,6 +44,9 @@ User.belongsToMany(User,{
     timestamps:false,
 })
 
+//favourite Many to many relation between User and article
+User.belongsToMany(Article,{through: 'Favourites',timestamps:false})
+Article.belongsToMany(User,{through: 'Favourites',timestamps:false})
 
 
 
@@ -61,6 +64,7 @@ app.use('/api/articles',articleRoute)
 app.use('/api/articles',commentRoute)
 app.use('/api/tags',tagRoute)
 app.use('/api/profiles',profileRoute)
+app.use('/api/articles',favouriteRoute)
 app.use(notFound)
 app.use(errorHandler)
 
