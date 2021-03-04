@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const {notFound,errorHandler} = require('./middleware/errorHandler')
 const sequelize = require('./dbConnection')
@@ -17,6 +18,10 @@ const profileRoute = require('./routes/profile')
 const favouriteRoute = require('./routes/favourites')
 
 const app = express()
+
+//CORS
+app.use(cors({credentials: true, origin: true})) 
+
 
 //RELATIONS:
 //1 to many relation between user and article
