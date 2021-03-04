@@ -15,6 +15,7 @@ function sanitizeOutput(article,user){
     if(article){
         delete user.dataValues.password
         delete user.dataValues.email
+        delete user.dataValues.following
         article.dataValues.author = user
         return article
     }
@@ -27,13 +28,13 @@ function sanitizeOutputMultiple(article){
     }
     delete article.dataValues.Tags
     article.dataValues.tagList = newTagList
-        
+    
     let user = {
         username:article.dataValues.User.username,
         email:article.dataValues.User.email, 
         bio:article.dataValues.User.bio,
         image: article.dataValues.User.image,
-        following: true
+        
     }
 
     delete article.dataValues.User
@@ -101,7 +102,7 @@ module.exports.getSingleArticleBySlug = async(req,res) => {
         const user = await article.getUser()
         
         article = sanitizeOutput(article,user)
-
+        
         res.status(200).json({article})
         
         
