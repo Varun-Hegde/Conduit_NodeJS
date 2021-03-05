@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -21,6 +22,7 @@ const app = express()
 
 //CORS
 app.use(cors({credentials: true, origin: true})) 
+
 
 
 //RELATIONS:

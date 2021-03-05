@@ -7,10 +7,11 @@ const {Sequelize} = require('sequelize')
     logging: false
 }); */
 
+
 //AMAZON RDS CONNECTION
-const sequelize = new Sequelize('conduit1','varun','password',{
+const sequelize = new Sequelize('conduit1',process.env.USER_NAME,process.env.PASSWORD,{
     dialect: 'mysql',
-    host:'conduit.cmcgkcqi7e2m.us-east-2.rds.amazonaws.com',
+    host:process.env.DB_HOST,
     logging: false,
     port: 3306
 });
