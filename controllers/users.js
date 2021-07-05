@@ -101,11 +101,11 @@ module.exports.updateUserDetails = async (req,res) => {
             const updatedUser = await user.update({username,bio,image,password})
             delete updatedUser.dataValues.password
             updatedUser.dataValues.token = req.header('Authorization').split(' ')[1]
-            res.json(updatedUser)
+            res.json({'user': updatedUser})
         }else{
             delete user.dataValues.password
             user.dataValues.token = req.header('Authorization').split(' ')[1]
-            res.json(user)
+            res.json({user})
         }
         
     }catch(e){
