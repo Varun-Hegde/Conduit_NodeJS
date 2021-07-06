@@ -256,9 +256,9 @@ module.exports.getAllArticles = async (req, res) => {
 module.exports.getFeed = async (req, res) => {
 	try {
 		const query = `
-            SELECT UserEmail
-            FROM followers
-            WHERE followerEmail = "${req.user.email}"`;
+            SELECT "UserEmail"
+            FROM "Followers"
+            WHERE "followerEmail" = '${req.user.email}'`;
 		const followingUsers = await sequelize.query(query);
 		if (followingUsers[0].length == 0) {
 			return res.json({ articles: [] });
