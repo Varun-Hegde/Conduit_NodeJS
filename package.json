@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate",
+    "test": "cross-env NODE_ENV=test DB_SSL=false jest --testTimeout=10000",
+    "pretest": "cross-env NODE_ENV=test DB_SSL=false npm run migrate:reset",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +37,9 @@
     "node": "12.19.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "cross-env": "^7.0.3",
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.2.2"
   }
 }

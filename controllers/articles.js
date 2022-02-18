@@ -60,6 +60,7 @@ module.exports.createArticle = async (req, res) => {
 			description: data.description,
 			body: data.body,
 			UserEmail: user.email,
+			isMatureContent: !!data.isMatureContent
 		});
 
 		if (data.tagList) {
@@ -88,8 +89,6 @@ module.exports.createArticle = async (req, res) => {
 module.exports.getSingleArticleBySlug = async (req, res) => {
 	try {
 		const { slug } = req.params;
-		console.log('HEllo');
-		console.log(slug);
 		let article = await Article.findByPk(slug, { include: Tag });
 
 		const user = await article.getUser();
@@ -127,8 +126,9 @@ module.exports.updateArticle = async (req, res) => {
 		const description = data.description ? data.description : article.description;
 		const body = data.body ? data.body : article.body;
 		const slug = data.title ? slugify(title) : slugInfo;
+		const isMatureContent = data.isMatureContent ? data.isMatureContent : article.isMatureContent;
 
-		const updatedArticle = await article.update({ slug, title, description, body });
+		const updatedArticle = await article.update({ slug, title, description, body, isMatureContent });
 
 		article = sanitizeOutput(updatedArticle, user);
 		res.status(200).json({ article });
@@ -255,37 +255,65 @@ module.exports.getAllArticles = async (req, res) => {
 
 module.exports.getFeed = async (req, res) => {
 	try {
-		const query = `
-            SELECT UserEmail
-            FROM followers
-            WHERE followerEmail = "${req.user.email}"`;
-		const followingUsers = await sequelize.query(query);
-		if (followingUsers[0].length == 0) {
+		const user = await User.findOne({
+			where: {
+				email: req.user.email
+			},
+			include: {
+				model: User,
+				as: 'followers'
+			}
+		});
+
+		const followingUsers = user.followers || [];
+		if (followingUsers.length == 0) {
 			return res.json({ articles: [] });
 		}
-		let followingUserEmail = [];
-		for (let t of followingUsers[0]) {
-			followingUserEmail.push(t.UserEmail);
-		}
 
-		let article = await Article.findAll({
+		const followingUserEmail = followingUsers.map(followingUser => followingUser.email);
+		const articles = await Article.findAll({
 			where: {
 				UserEmail: followingUserEmail,
 			},
 			include: [Tag, User],
 		});
 
-		let articles = [];
-		for (let t of article) {
-			let addArt = sanitizeOutputMultiple(t);
-			articles.push(addArt);
-		}
-
-		res.json({ articles });
+		res.json({ articles: articles.map(article => sanitizeOutputMultiple(article)) });
 	} catch (e) {
 		const code = res.statusCode ? res.statusCode : 422;
 		return res.status(code).json({
 			errors: { body: ['Could not get feed ', e.message] },
+		});
+	}
+};
+
+module.exports.getLatestMatureArticles = async (req, res) => {
+	try {
+		const articles = await Article.findAll({
+			include: [
+				{
+					model: Tag,
+					attributes: ['name'],
+				},
+				{
+					model: User,
+					attributes: ['email', 'username', 'bio', 'image'],
+				},
+			],
+			where: {
+				isMatureContent: true,
+			},
+			limit: 10,
+			order: [
+				['createdAt', 'DESC']
+			]
+		});
+
+		res.json({ articles: articles.map(article => sanitizeOutputMultiple(article)) });
+	} catch (e) {
+		const code = res.statusCode ? res.statusCode : 422;
+		return res.status(code).json({
+			errors: { body: ['Could not get mature articles ', e.message] },
 		});
 	}
 };

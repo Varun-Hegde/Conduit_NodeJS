@@ -17,7 +17,12 @@ const Article = sequelize.define('Article',{
     body: { 
       type: DataTypes.TEXT,  
       allowNull: false,
-    }
+    },
+    isMatureContent: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+    },
 })
 
 module.exports = Article
