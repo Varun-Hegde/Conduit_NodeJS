@@ -1,10 +1,10 @@
-const {DataTypes} = require('sequelize')
-const sequelize = require('../dbConnection')
+const { DataTypes } = require('sequelize');
+const sequelize = require('../dbConnection');
 
-const Comment = sequelize.define('Comment',{
+const Comment = sequelize.define('Comment', {
     body: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT
     }
-})
+});
 
-module.exports = Comment
+module.exports = Comment;

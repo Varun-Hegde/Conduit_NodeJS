@@ -1,39 +1,41 @@
 {
-  "name": "conduit_nodejs",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Varun-Hegde/Conduit_NodeJS.git"
-  },
-  "author": "Varun Hegde",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Varun-Hegde/Conduit_NodeJS/issues"
-  },
-  "homepage": "https://github.com/Varun-Hegde/Conduit_NodeJS#readme",
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-async-handler": "^1.1.4",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "mysql2": "^2.2.5",
-    "pg": "^8.5.1",
-    "pg-hstore": "^2.3.3",
-    "sequelize": "^6.5.0"
-  },
-  "engines": {
-    "node": "12.19.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
-  }
+    "name": "conduit_nodejs",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon index.js",
+        "prettify": "prettier '**/*.{js,json}' --write"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Varun-Hegde/Conduit_NodeJS.git"
+    },
+    "author": "Varun Hegde",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Varun-Hegde/Conduit_NodeJS/issues"
+    },
+    "homepage": "https://github.com/Varun-Hegde/Conduit_NodeJS#readme",
+    "dependencies": {
+        "bcrypt": "^5.0.1",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-async-handler": "^1.1.4",
+        "jsonwebtoken": "^8.5.1",
+        "morgan": "^1.10.0",
+        "mysql2": "^2.2.5",
+        "pg": "^8.5.1",
+        "pg-hstore": "^2.3.3",
+        "sequelize": "^6.5.0"
+    },
+    "engines": {
+        "node": "12.19.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7",
+        "prettier": "^2.6.2"
+    }
 }

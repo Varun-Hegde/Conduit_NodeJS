@@ -1,7 +1,7 @@
-const express = require('express')
-const router = express.Router()
-const TagController = require('../controllers/tags')
+const express = require('express');
+const router = express.Router();
+const TagController = require('../controllers/tags');
 
-router.get('/',TagController.getAllTags)     //Get all tags
+router.get('/', TagController.getAllTags); //Get all tags
 
-module.exports = router
+module.exports = router;
