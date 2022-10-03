@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+import { Sequelize } from "sequelize";
 
 //LOCAL CONNECTION
 
@@ -42,4 +42,4 @@ const checkConnection = async () => {
 
 checkConnection();
 
-module.exports = sequelize;
+export default sequelize;
